@@ -1,1 +1,4 @@
-npx tailwindcss init
+<?php
+header("Location: Frontend/index.php");
+exit;
+?>
