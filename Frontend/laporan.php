@@ -4,11 +4,11 @@ require_once '../Backend/koneksi.php';
 // Ambil data laporan
 $query_laporan = mysqli_query($conn, "
     SELECT 
-        DATE(waktu_penjualan) as tanggal,
+        DATE(tgl_penjualan) as tanggal,
         COUNT(no_nota) as total_transaksi,
         SUM(total_harga) as pendapatan
     FROM nota_penjualan 
-    GROUP BY DATE(waktu_penjualan)
+    GROUP BY DATE(tgl_penjualan)
     ORDER BY tanggal DESC
 ");
 
@@ -43,7 +43,6 @@ while ($row = mysqli_fetch_assoc($query_laporan)) {
         </div>
 
         <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-10">
-            <!-- Card 1 -->
             <div class="bg-white p-6 rounded-2xl border border-gray-100 shadow-sm flex flex-col justify-between">
                 <div class="flex items-center justify-between mb-4">
                     <p class="text-sm font-medium text-gray-600">Total Pendapatan</p>

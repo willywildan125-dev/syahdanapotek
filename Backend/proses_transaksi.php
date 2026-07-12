@@ -25,7 +25,8 @@ mysqli_begin_transaction($conn);
 
 try {
     // 1. Insert to nota_penjualan
-    $query_nota = "INSERT INTO nota_penjualan (no_nota, total_harga, tgl_penjualan, waktu_penjualan) VALUES ('$no_nota', $total_harga, '$tgl_penjualan', '$waktu_penjualan')";
+    // UBAH BARIS INI DI Backend/proses_transaksi.php:
+$query_nota = "INSERT INTO nota_penjualan (no_nota, total_harga, tgl_penjualan) VALUES ('$no_nota', $total_harga, '$tgl_penjualan')";
     if (!mysqli_query($conn, $query_nota)) throw new Exception("Gagal menyimpan nota: " . mysqli_error($conn));
 
     // 2. Insert detail_penjualan and update stock

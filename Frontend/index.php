@@ -15,7 +15,7 @@ $total_transaksi = $row_transaksi['count'] ? $row_transaksi['count'] : 0;
 $rata_rata = $total_transaksi > 0 ? $total_pendapatan / $total_transaksi : 0;
 
 // Fetch Recent Transactions
-$query_recent = mysqli_query($conn, "SELECT * FROM nota_penjualan ORDER BY waktu_penjualan DESC, tgl_penjualan DESC LIMIT 5");
+$query_recent = mysqli_query($conn, "SELECT * FROM nota_penjualan ORDER BY tgl_penjualan DESC LIMIT 5");
 ?>
 <!DOCTYPE html>
 <html lang="id">

@@ -12,7 +12,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     $stok_awal         = $_POST['stok_awal'];
     $stok_minimum      = $_POST['stok_minimum'];
     $harga_beli        = $_POST['harga_beli'];
-    $kadaluwarsa       = "2030-12-31"; // Default expiration since not in UI design
+    $kadaluwarsa = mysqli_real_escape_string($conn, $_POST['kadaluwarsa']);
     
     $id_kategori_sql = empty($id_kategori) ? "NULL" : "'" . mysqli_real_escape_string($conn, $id_kategori) . "'";
     

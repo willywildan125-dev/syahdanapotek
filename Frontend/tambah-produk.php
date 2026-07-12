@@ -34,49 +34,57 @@ while ($row = mysqli_fetch_assoc($query_kategori)) {
             </div>
         </div>
 
-        <div class="flex-1 p-10 overflow-y-auto">
-            <div class="max-w-4xl mx-auto">
-                <div class="text-sm text-gray-500 mb-6 flex items-center">
-                    <a href="persediaan.php" class="hover:text-brand-600">Inventori</a>
-                    <svg class="w-4 h-4 mx-2" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path></svg>
-                    <span class="text-gray-900">Tambah Produk Baru</span>
-                </div>
-
-                <form action="../Backend/proses_tambah.php" method="POST" class="space-y-6">
-                    
-                    <!-- Informasi Produk -->
-                    <div class="bg-white rounded-2xl border border-gray-100 p-8 shadow-sm">
-                        <h3 class="text-lg font-bold text-brand-700 flex items-center mb-6">
-                            <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 002-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10"></path></svg>
-                            Informasi Produk
-                        </h3>
-                        
-                        <div class="space-y-5">
-                            <div>
-                                <label class="block text-xs font-bold text-gray-600 mb-2 uppercase tracking-wide">Nama Produk <span class="text-red-500">*</span></label>
-                                <input type="text" name="nama_obat" required placeholder="Contoh: Paracetamol 500mg" class="w-full bg-gray-50 border border-gray-100 rounded-xl px-4 py-3 text-sm outline-none focus:border-brand-500 transition">
-                            </div>
-                            
-                            <div class="grid grid-cols-2 gap-5">
-                                <div>
-                                    <label class="block text-xs font-bold text-gray-600 mb-2 uppercase tracking-wide">SKU / Barcode <span class="text-red-500">*</span></label>
-                                    <div class="relative">
-                                        <input type="text" name="kode_obat" required placeholder="Scan atau ketik kode" class="w-full bg-gray-50 border border-gray-100 rounded-xl pl-4 pr-10 py-3 text-sm outline-none focus:border-brand-500 transition">
-                                        <svg class="w-5 h-5 text-gray-400 absolute right-3 top-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v1m6 11h2m-6 0h-2v4m0-11v3m0 0h.01M12 12h4.01M16 20h4M4 12h4m12 0h.01M5 8h2a1 1 0 001-1V5a1 1 0 00-1-1H5a1 1 0 00-1 1v2a1 1 0 001 1zm12 0h2a1 1 0 001-1V5a1 1 0 00-1-1h-2a1 1 0 00-1 1v2a1 1 0 001 1zM5 20h2a1 1 0 001-1v-2a1 1 0 00-1-1H5a1 1 0 00-1 1v2a1 1 0 001 1z"></path></svg>
-                                    </div>
-                                </div>
-                                <div>
-                                    <label class="block text-xs font-bold text-gray-600 mb-2 uppercase tracking-wide">Kategori <span class="text-red-500">*</span></label>
-                                    <select name="id_kategori" required class="w-full bg-gray-50 border border-gray-100 rounded-xl px-4 py-3 text-sm outline-none focus:border-brand-500 transition appearance-none">
-                                        <option value="">Pilih kategori...</option>
-                                        <?php foreach ($kategori_options as $kat): ?>
-                                            <option value="<?php echo $kat['id_kategori']; ?>"><?php echo htmlspecialchars($kat['nama_kategori']); ?></option>
-                                        <?php endforeach; ?>
-                                    </select>
-                                </div>
-                            </div>
-                        </div>
+        <div class="bg-white rounded-2xl border border-gray-100 p-8 shadow-sm space-y-6">
+    <h3 class="text-lg font-bold text-brand-700 flex items-center border-b border-gray-100 pb-4">
+        <svg class="w-5 h-5 mr-2 text-brand-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 002-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10"></path>
+        </svg>
+        Informasi Produk
+    </h3>
+    
+    <div class="space-y-5">
+        <div class="grid grid-cols-2 gap-5">
+            <div>
+                <label class="block text-xs font-bold text-gray-700 mb-2 uppercase tracking-wide">Nama Produk <span class="text-red-500">*</span></label>
+                <input type="text" name="nama_obat" required placeholder="Contoh: Paracetamol 500mg" class="w-full bg-gray-50/70 border border-gray-200 rounded-xl px-4 py-3 text-sm outline-none focus:bg-white focus:border-brand-500 focus:ring-1 focus:ring-brand-500 transition">
+            </div>
+            <div>
+                <label class="block text-xs font-bold text-gray-700 mb-2 uppercase tracking-wide">Rak</label>
+                <input type="text" name="no_rak" placeholder="Contoh: A-01" class="w-full bg-gray-50/70 border border-gray-200 rounded-xl px-4 py-3 text-sm outline-none focus:bg-white focus:border-brand-500 focus:ring-1 focus:ring-brand-500 transition">
+            </div>
+        </div>
+        
+        <div class="grid grid-cols-2 gap-5">
+            <div>
+                <label class="block text-xs font-bold text-gray-700 mb-2 uppercase tracking-wide">SKU / Barcode <span class="text-red-500">*</span></label>
+                <div class="relative">
+                    <input type="text" name="kode_obat" required placeholder="Scan atau ketik kode" class="w-full bg-gray-50/70 border border-gray-200 rounded-xl pl-4 pr-12 py-3 text-sm outline-none focus:bg-white focus:border-brand-500 focus:ring-1 focus:ring-brand-500 transition">
+                    <div class="absolute right-4 top-3.5 text-gray-400">
+                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v1m6 11h2m-6 0h-2v4m0-11v3m0 0h.01M12 12h4.01M16 20h4M4 12h4m12 0h.01M5 8h2a1 1 0 001-1V5a1 1 0 00-1-1H5a1 1 0 00-1 1v2a1 1 0 001 1zm12 0h2a1 1 0 001-1V5a1 1 0 00-1-1h-2a1 1 0 00-1 1v2a1 1 0 001 1zM5 20h2a1 1 0 001-1v-2a1 1 0 00-1-1H5a1 1 0 00-1 1v2a1 1 0 001 1z"></path>
+                        </svg>
                     </div>
+                </div>
+            </div>
+            <div>
+                <label class="block text-xs font-bold text-gray-700 mb-2 uppercase tracking-wide">Kategori <span class="text-red-500">*</span></label>
+                <div class="relative">
+                    <select name="id_kategori" required class="w-full bg-gray-50/70 border border-gray-200 rounded-xl px-4 py-3 text-sm outline-none focus:bg-white focus:border-brand-500 focus:ring-1 focus:ring-brand-500 transition appearance-none">
+                        <option value="" class="text-gray-400">Pilih kategori...</option>
+                        <?php foreach ($kategori_options as $kat): ?>
+                            <option value="<?php echo $kat['id_kategori']; ?>"><?php echo htmlspecialchars($kat['nama_kategori']); ?></option>
+                        <?php endforeach; ?>
+                    </select>
+                    <div class="pointer-events-none absolute inset-y-0 right-0 flex items-center px-4 text-gray-500">
+                        <svg class="fill-current h-4 w-4" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20">
+                            <path d="M9.293 12.95l.707.707L15.657 8l-1.414-1.414L10 10.828 5.757 6.586 4.343 8z"/>
+                        </svg>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
 
                     <!-- Satuan & Stok -->
                     <div class="bg-white rounded-2xl border border-gray-100 p-8 shadow-sm">
@@ -87,7 +95,7 @@ while ($row = mysqli_fetch_assoc($query_kategori)) {
                         
                         <div class="grid grid-cols-2 gap-5 mb-5">
                             <div>
-                                <label class="block text-xs font-bold text-gray-600 mb-2 uppercase tracking-wide">Unit Terkecil <span class="text-red-500">*</span></label>
+                                <label class="block text-xs font-bold text-gray-600 mb-2 uppercase tracking-wide">SATUAN/UNIT TERKECIL <span class="text-red-500">*</span></label>
                                 <select name="satuan_terkecil" required class="w-full bg-gray-50 border border-gray-100 rounded-xl px-4 py-3 text-sm outline-none focus:border-brand-500 transition appearance-none">
                                     <option value="">Pilih unit...</option>
                                     <option value="Tablet">Tablet</option>
@@ -98,21 +106,15 @@ while ($row = mysqli_fetch_assoc($query_kategori)) {
                                 </select>
                             </div>
                             <div>
-                                <label class="block text-xs font-bold text-gray-600 mb-2 uppercase tracking-wide">Deskripsi Kemasan</label>
-                                <input type="text" name="deskripsi_kemasan" placeholder="Contoh: Box isi 10 Strip @ 10 Tablet" class="w-full bg-gray-50 border border-gray-100 rounded-xl px-4 py-3 text-sm outline-none focus:border-brand-500 transition">
+                                <label class="block text-xs font-bold text-gray-600 mb-2 uppercase tracking-wide">STOK</label>
+                                <input type="text" name="STOK" placeholder="Contoh: 10" class="w-full bg-gray-50 border border-gray-100 rounded-xl px-4 py-3 text-sm outline-none focus:border-brand-500 transition">
                             </div>
                         </div>
 
                         <div class="grid grid-cols-2 gap-5">
                             <div>
-                                <label class="block text-xs font-bold text-gray-600 mb-2 uppercase tracking-wide">Stok Awal <span class="text-red-500">*</span></label>
-                                <input type="number" name="stok_awal" required value="0" min="0" class="w-full bg-gray-50 border border-gray-100 rounded-xl px-4 py-3 text-sm outline-none focus:border-brand-500 transition">
-                                <p class="text-[10px] text-gray-400 mt-1">Dalam unit terkecil</p>
-                            </div>
-                            <div>
-                                <label class="block text-xs font-bold text-gray-600 mb-2 uppercase tracking-wide">Stok Minimum (Alert) <span class="text-red-500">*</span></label>
-                                <input type="number" name="stok_minimum" required value="10" min="0" class="w-full bg-gray-50 border border-gray-100 rounded-xl px-4 py-3 text-sm outline-none focus:border-brand-500 transition">
-                                <p class="text-[10px] text-gray-400 mt-1">Notifikasi jika stok mencapai batas ini</p>
+                                <label class="block text-xs font-bold text-gray-600 mb-2 uppercase tracking-wide">KADALUWARSA<span class="text-red-500">*</span></label>
+                                <input type="date" name="kadaluwarsa" required class="w-full bg-gray-50 border border-gray-100 rounded-xl px-4 py-3 text-sm outline-none focus:border-brand-500 transition">
                             </div>
                         </div>
                     </div>
