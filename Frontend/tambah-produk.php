@@ -97,7 +97,6 @@ while ($row = mysqli_fetch_assoc($query_kategori)) {
                             <div>
                                 <label class="block text-xs font-bold text-gray-600 mb-2 uppercase tracking-wide">SATUAN/UNIT TERKECIL <span class="text-red-500">*</span></label>
                                 <select name="satuan_terkecil" required class="w-full bg-gray-50 border border-gray-100 rounded-xl px-4 py-3 text-sm outline-none focus:border-brand-500 transition appearance-none">
-                                    <option value="">Pilih unit...</option>
                                     <option value="Tablet">Tablet</option>
                                     <option value="Kapsul">Kapsul</option>
                                     <option value="Botol">Botol</option>

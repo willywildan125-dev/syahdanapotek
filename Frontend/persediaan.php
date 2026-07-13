@@ -1,9 +1,13 @@
 <?php
 require_once '../Backend/koneksi.php';
 
-// Fetch inventory data
 $query = mysqli_query($conn, "
-    SELECT o.*, k.nama_kategori, IFNULL(SUM(s.jumlah_stock), 0) as total_stock
+    SELECT 
+        o.*, 
+        k.nama_kategori, 
+        IFNULL(SUM(s.jumlah_stock), 0) as total_stock,
+        IFNULL(SUM(s.jumlah_stock * s.harga_awal), 0) as total_aset,
+        IFNULL(MAX(s.harga_awal), 0) as hpp
     FROM obat o 
     LEFT JOIN kategori k ON o.id_kategori = k.id_kategori
     LEFT JOIN stock s ON o.kode_obat = s.kode_obat
@@ -18,17 +22,16 @@ $items = [];
 
 while ($row = mysqli_fetch_assoc($query)) {
     $stock = $row['total_stock'];
-    $hpp = $row['harga_beli'] ?: 0;
-    
+    $unit  = $row['satuan'];
+    $hpp   = $row['hpp']; 
     $total_item_stok += $stock;
-    $total_nilai_persediaan += ($stock * $hpp);
+    $total_nilai_persediaan += $row['total_aset']; 
     
     if ($stock == 0) {
         $stok_habis++;
     } elseif ($stock < 10) {
         $stok_menipis++;
     }
-    
     $items[] = $row;
 }
 ?>
@@ -145,8 +148,8 @@ while ($row = mysqli_fetch_assoc($query)) {
                                 $status = 'Menipis';
                                 $statusClass = 'bg-yellow-100 text-yellow-700';
                             }
-                            $hpp = $item['harga_beli'] ?: 0;
-                            $aset = $hpp * $item['total_stock'];
+                            $hpp = $item['hpp'];
+                            $aset =$item['total_aset'];
                         ?>
                         <tr class="hover:bg-gray-50 transition">
                             <td class="px-6 py-4">
@@ -155,7 +158,7 @@ while ($row = mysqli_fetch_assoc($query)) {
                             </td>
                             <td class="px-6 py-4 text-gray-700"><?php echo htmlspecialchars($item['nama_kategori'] ?? '-'); ?></td>
                             <td class="px-6 py-4 font-bold text-gray-900"><?php echo $item['total_stock']; ?></td>
-                            <td class="px-6 py-4 text-gray-700"><?php echo htmlspecialchars($item['satuan_terkecil'] ?? '-'); ?></td>
+                            <td class="px-6 py-4 text-gray-700"><?php echo htmlspecialchars($item['satuan'] ?? '-'); ?></td>
                             <td class="px-6 py-4 text-gray-700">Rp <?php echo number_format($hpp, 0, ',', '.'); ?></td>
                             <td class="px-6 py-4 text-gray-700">Rp <?php echo number_format($item['harga_jual'], 0, ',', '.'); ?></td>
                             <td class="px-6 py-4 text-right font-medium text-gray-900">Rp <?php echo number_format($aset, 0, ',', '.'); ?></td>

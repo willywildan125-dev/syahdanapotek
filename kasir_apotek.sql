@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: 127.0.0.1
--- Generation Time: Jul 09, 2026 at 06:10 AM
+-- Generation Time: Jul 12, 2026 at 04:52 PM
 -- Server version: 10.4.32-MariaDB
 -- PHP Version: 8.2.12
 
@@ -44,6 +44,14 @@ CREATE TABLE `kategori` (
   `nama_kategori` varchar(50) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
+--
+-- Dumping data for table `kategori`
+--
+
+INSERT INTO `kategori` (`id_kategori`, `nama_kategori`) VALUES
+('001', 'Pill'),
+('002', 'Sirup');
+
 -- --------------------------------------------------------
 
 --
@@ -67,9 +75,17 @@ CREATE TABLE `obat` (
   `nama_obat` varchar(100) NOT NULL,
   `harga_jual` int(11) NOT NULL,
   `kadaluwarsa` date NOT NULL,
+  `satuan` varchar(20) NOT NULL,
   `id_kategori` varchar(20) DEFAULT NULL,
   `no_rak` varchar(20) DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+--
+-- Dumping data for table `obat`
+--
+
+INSERT INTO `obat` (`kode_obat`, `nama_obat`, `harga_jual`, `kadaluwarsa`, `satuan`, `id_kategori`, `no_rak`) VALUES
+('231', 'Paracetamol 500mg', 50000000, '2026-07-08', 'Tablet', '002', NULL);
 
 -- --------------------------------------------------------
 
@@ -78,7 +94,8 @@ CREATE TABLE `obat` (
 --
 
 CREATE TABLE `rak` (
-  `no_rak` varchar(20) NOT NULL
+  `no_rak` varchar(20) NOT NULL,
+  `nama_rak` varchar(20) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 -- --------------------------------------------------------
@@ -91,8 +108,16 @@ CREATE TABLE `stock` (
   `id_stock` varchar(20) NOT NULL,
   `jumlah_stock` int(11) NOT NULL,
   `tgl_masuk` date NOT NULL,
+  `harga_awal` int(20) NOT NULL,
   `kode_obat` varchar(20) DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+--
+-- Dumping data for table `stock`
+--
+
+INSERT INTO `stock` (`id_stock`, `jumlah_stock`, `tgl_masuk`, `harga_awal`, `kode_obat`) VALUES
+('STK-231', 12, '2026-07-12', 1000000, '231');
 
 --
 -- Indexes for dumped tables
