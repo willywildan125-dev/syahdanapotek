@@ -1,55 +1,63 @@
 <?php
+// MENGAKTIFKAN DETEKSI ERROR KETAT: Jika ada salah 1 huruf di database, langsung ketahuan!
+mysqli_report(MYSQLI_REPORT_ERROR | MYSQLI_REPORT_STRICT);
+
 require_once 'koneksi.php';
 header('Content-Type: application/json');
 
-// Read JSON input
-$data = json_decode(file_get_contents('php://input'), true);
-
-if (!$data || empty($data['items'])) {
-    echo json_encode(['success' => false, 'message' => 'Data pesanan kosong']);
-    exit;
-}
-
-$items = $data['items'];
-$total_harga = $data['total_harga'];
-$subtotal = $data['subtotal'];
-$tax = $data['tax'];
-$discount = $data['discount'];
-
-// Generate No Nota (e.g. TRX-XXXX)
-$no_nota = 'TRX-' . rand(1000, 9999);
-$tgl_penjualan = date('Y-m-d');
-$waktu_penjualan = date('Y-m-d H:i:s');
-
-mysqli_begin_transaction($conn);
-
 try {
-    // 1. Insert to nota_penjualan
-    // UBAH BARIS INI DI Backend/proses_transaksi.php:
-$query_nota = "INSERT INTO nota_penjualan (no_nota, total_harga, tgl_penjualan) VALUES ('$no_nota', $total_harga, '$tgl_penjualan')";
-    if (!mysqli_query($conn, $query_nota)) throw new Exception("Gagal menyimpan nota: " . mysqli_error($conn));
+    // Menerima data JSON dari JavaScript Kasir
+    $data = json_decode(file_get_contents('php://input'), true);
 
-    // 2. Insert detail_penjualan and update stock
-    foreach ($items as $item) {
-        $kode_obat = $item['kode_obat'];
-        $jumlah = $item['qty'];
-
-        // Insert detail
-        $query_detail = "INSERT INTO detail_penjualan (no_nota, kode_obat, jumlah_beli) VALUES ('$no_nota', '$kode_obat', $jumlah)";
-        if (!mysqli_query($conn, $query_detail)) throw new Exception("Gagal menyimpan detail: " . mysqli_error($conn));
-
-        // Deduct stock (simplified: just delete from stock table or we can just ignore for now if structure is complex, but wait, `stock` table has `id_stock`, `jumlah_stock`. We should deduct the oldest stock or create a minus entry. For simplicity, let's just insert a negative stock entry to represent deduction, or update an existing one).
-        // Let's create a minus entry in stock table for deduction.
-        $id_stock = 'OUT-' . rand(1000, 9999);
-        $query_stock = "INSERT INTO stock (id_stock, jumlah_stock, tgl_masuk, kode_obat) VALUES ('$id_stock', -$jumlah, '$tgl_penjualan', '$kode_obat')";
-        if (!mysqli_query($conn, $query_stock)) throw new Exception("Gagal memotong stok: " . mysqli_error($conn));
+    if (!$data || empty($data['items'])) {
+        throw new Exception('Keranjang kosong!');
     }
 
+    // Generate Nomor Nota
+    $no_nota = 'TRX-' . date('dmyHis'); 
+    $total_harga = $data['total_harga'];
+    $tgl_penjualan = date('Y-m-d'); // Sesuai dengan tipe data DATE di database
+
+    // Mulai transaksi database
+    mysqli_begin_transaction($conn);
+
+    // 1. Simpan ke tabel nota_penjualan
+    $sql_nota = "INSERT INTO nota_penjualan (no_nota, total_harga, tgl_penjualan) 
+                 VALUES ('$no_nota', '$total_harga', '$tgl_penjualan')";
+    mysqli_query($conn, $sql_nota);
+
+    // 2. Simpan setiap barang ke tabel detail_penjualan dan kurangi stok
+    foreach ($data['items'] as $item) {
+        $kode_obat = mysqli_real_escape_string($conn, $item['kode_obat']);
+        $qty = (int)$item['qty'];
+
+        // Cek apakah data barang terkirim dengan benar
+        if (empty($kode_obat)) {
+            throw new Exception("Kode obat kosong dari kasir!");
+        }
+
+        // Insert Detail ke tabel detail_penjualan (Sesuai dengan database yang kamu kirim: no_nota, kode_obat, jumlah_beli)
+        $sql_detail = "INSERT INTO detail_penjualan (no_nota, kode_obat, jumlah_beli) 
+                       VALUES ('$no_nota', '$kode_obat', '$qty')";
+        mysqli_query($conn, $sql_detail);
+
+        // Update/Kurangi Stok Obat
+        $sql_stok = "UPDATE stock SET jumlah_stock = jumlah_stock - $qty WHERE kode_obat = '$kode_obat'";
+        mysqli_query($conn, $sql_stok);
+    }
+
+    // Jika semua berhasil tanpa error sedikitpun, simpan permanen
     mysqli_commit($conn);
+    
+    // Beri respon sukses ke Frontend
     echo json_encode(['success' => true, 'no_nota' => $no_nota]);
 
 } catch (Exception $e) {
-    mysqli_rollback($conn);
-    echo json_encode(['success' => false, 'message' => $e->getMessage()]);
+    // Jika ada error, batalkan semua perubahan (termasuk nota_penjualan)
+    if (isset($conn)) {
+        mysqli_rollback($conn);
+    }
+    // Kirim pesan error yang SPESIFIK ke layar kasir
+    echo json_encode(['success' => false, 'message' => 'Detail Error DB: ' . $e->getMessage()]);
 }
 ?>

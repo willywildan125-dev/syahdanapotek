@@ -1,21 +1,22 @@
 <?php
 require_once '../Backend/koneksi.php';
 /** @var mysqli $conn */
+
 // Fetch Total Pendapatan
 $query_pendapatan = mysqli_query($conn, "SELECT SUM(total_harga) as total FROM nota_penjualan");
 $row_pendapatan = mysqli_fetch_assoc($query_pendapatan);
-$total_pendapatan = $row_pendapatan['total'] ? $row_pendapatan['total'] : 0;
+$total_pendapatan = !empty($row_pendapatan['total']) ? $row_pendapatan['total'] : 0;
 
 // Fetch Total Transaksi
 $query_transaksi = mysqli_query($conn, "SELECT COUNT(*) as count FROM nota_penjualan");
 $row_transaksi = mysqli_fetch_assoc($query_transaksi);
-$total_transaksi = $row_transaksi['count'] ? $row_transaksi['count'] : 0;
+$total_transaksi = !empty($row_transaksi['count']) ? $row_transaksi['count'] : 0;
 
 // Rata-rata Penjualan
 $rata_rata = $total_transaksi > 0 ? $total_pendapatan / $total_transaksi : 0;
 
 // Fetch Recent Transactions
-$query_recent = mysqli_query($conn, "SELECT * FROM nota_penjualan ORDER BY tgl_penjualan DESC LIMIT 5");
+$query_recent = mysqli_query($conn, "SELECT * FROM nota_penjualan ORDER BY tgl_penjualan DESC, LENGTH(no_nota) DESC, no_nota DESC LIMIT 5");
 ?>
 <!DOCTYPE html>
 <html lang="id">
@@ -121,31 +122,34 @@ $query_recent = mysqli_query($conn, "SELECT * FROM nota_penjualan ORDER BY tgl_p
                     <tbody class="divide-y divide-gray-100">
                         <?php if (mysqli_num_rows($query_recent) > 0): ?>
                             <?php while ($row = mysqli_fetch_assoc($query_recent)): 
-                                $statusClass = ($row['status'] == 'Selesai') ? 'bg-green-100 text-green-700' : 'bg-red-100 text-red-700';
-                                $datetime = !empty($row['waktu_penjualan']) ? date('d M Y, H:i', strtotime($row['waktu_penjualan'])) : date('d M Y, H:i', strtotime($row['tgl_penjualan']));
+                                // Karena tidak ada kolom status di DB, otomatis kita anggap 'Selesai'
+                                $status = $row['status'] ?? 'Selesai';
+                                $statusClass = ($status == 'Selesai') ? 'bg-green-100 text-green-700' : 'bg-red-100 text-red-700';
+                                
+                                // Format tanggal disesuaikan (H:i dihapus agar tidak muncul 00:00)
+                                $datetime = date('d M Y', strtotime($row['tgl_penjualan'] ?? 'now'));
+                                
+                                $nama_pelanggan = $row['nama_pelanggan'] ?? 'Pelanggan Umum';
+                                $metode = $row['metode_pembayaran'] ?? 'Tunai';
                             ?>
                             <tr class="hover:bg-gray-50 transition">
                                 <td class="px-6 py-4 text-gray-700"><?php echo $datetime; ?></td>
-                                <td class="px-6 py-4 font-medium text-brand-600">#<?php echo $row['no_nota']; ?></td>
-                                <td class="px-6 py-4 text-gray-700"><?php echo htmlspecialchars($row['nama_pelanggan']); ?></td>
+                                <td class="px-6 py-4 font-medium text-brand-600">#<?php echo $row['no_nota'] ?? '-'; ?></td>
+                                <td class="px-6 py-4 text-gray-700"><?php echo htmlspecialchars($nama_pelanggan); ?></td>
                                 <td class="px-6 py-4 text-gray-700 flex items-center">
-                                    <?php if ($row['metode_pembayaran'] == 'Tunai'): ?>
-                                        <svg class="w-4 h-4 mr-2 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 9V7a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2m2 4h10a2 2 0 002-2v-6a2 2 0 00-2-2H9a2 2 0 00-2 2v6a2 2 0 002 2zm7-5a2 2 0 11-4 0 2 2 0 014 0z"></path></svg>
-                                    <?php else: ?>
-                                        <svg class="w-4 h-4 mr-2 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v1m6 11h2m-6 0h-2v4m0-11v3m0 0h.01M12 12h4.01M16 20h4M4 12h4m12 0h.01M5 8h2a1 1 0 001-1V5a1 1 0 00-1-1H5a1 1 0 00-1 1v2a1 1 0 001 1zm12 0h2a1 1 0 001-1V5a1 1 0 00-1-1h-2a1 1 0 00-1 1v2a1 1 0 001 1zM5 20h2a1 1 0 001-1v-2a1 1 0 00-1-1H5a1 1 0 00-1 1v2a1 1 0 001 1z"></path></svg>
-                                    <?php endif; ?>
-                                    <?php echo htmlspecialchars($row['metode_pembayaran']); ?>
+                                    <svg class="w-4 h-4 mr-2 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 9V7a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2m2 4h10a2 2 0 002-2v-6a2 2 0 00-2-2H9a2 2 0 00-2 2v6a2 2 0 002 2zm7-5a2 2 0 11-4 0 2 2 0 014 0z"></path></svg>
+                                    <?php echo htmlspecialchars($metode); ?>
                                 </td>
-                                <td class="px-6 py-4 text-right font-semibold text-gray-900">Rp <?php echo number_format($row['total_harga'], 0, ',', '.'); ?></td>
+                                <td class="px-6 py-4 text-right font-semibold text-gray-900">Rp <?php echo number_format($row['total_harga'] ?? 0, 0, ',', '.'); ?></td>
                                 <td class="px-6 py-4 text-center">
                                     <span class="px-3 py-1 text-xs font-medium rounded-full <?php echo $statusClass; ?>">
-                                        <?php echo htmlspecialchars($row['status']); ?>
+                                        <?php echo htmlspecialchars($status); ?>
                                     </span>
                                 </td>
                                 <td class="px-6 py-4 text-center">
-                                    <button class="text-gray-400 hover:text-brand-600 transition">
+                                    <a href="struk.php?no_nota=<?php echo $row['no_nota']; ?>" target="_blank" class="text-gray-400 hover:text-brand-600 transition" title="Lihat Struk">
                                         <svg class="w-5 h-5 mx-auto" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"></path></svg>
-                                    </button>
+                                    </a>
                                 </td>
                             </tr>
                             <?php endwhile; ?>

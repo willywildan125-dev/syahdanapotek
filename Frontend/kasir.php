@@ -14,9 +14,7 @@
 </head>
 <body class="bg-gray-50 font-sans text-gray-800 antialiased overflow-hidden">
     <?php include 'sidebar.php'; ?>
-    
-    <main class="ml-64 flex h-screen">
-        
+    <main class="ml-64 p-10 min-h-screen flex gap-6">
         <!-- Left Product Section -->
         <div class="flex-1 p-8 flex flex-col h-full bg-white">
             <!-- Search & Scan -->
@@ -31,18 +29,9 @@
                 </button>
             </div>
             
-            <!-- Category Filters -->
-            <div class="flex space-x-2.5 mb-8 overflow-x-auto pb-2" id="categoryFilters">
-                <button class="px-5 py-2 bg-brand-700 text-white rounded-full text-sm font-medium shadow-sm transition" data-category="all">All</button>
-                <button class="px-5 py-2 bg-gray-50 border border-gray-100 text-gray-600 hover:bg-gray-100 rounded-full text-sm font-medium transition" data-category="Analgesik">Pain Relief</button>
-                <button class="px-5 py-2 bg-gray-50 border border-gray-100 text-gray-600 hover:bg-gray-100 rounded-full text-sm font-medium transition" data-category="Antibiotik">Antibiotics</button>
-                <button class="px-5 py-2 bg-gray-50 border border-gray-100 text-gray-600 hover:bg-gray-100 rounded-full text-sm font-medium transition" data-category="Vitamin">Vitamins</button>
-                <button class="px-5 py-2 bg-gray-50 border border-gray-100 text-gray-600 hover:bg-gray-100 rounded-full text-sm font-medium transition" data-category="Alkes">First Aid</button>
-            </div>
-
             <!-- Product Grid -->
             <div class="flex-1 overflow-y-auto pr-2">
-                <div class="grid grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-5" id="productGrid">
+                <div class="grid grid-cols-1 lg:grid-cols-2 xl:grid-cols-3 gap-4" id="productGrid">
                     <!-- Products will be injected here via JS -->
                     <div class="col-span-full text-center text-gray-500 py-10">Memuat produk...</div>
                 </div>
@@ -84,14 +73,6 @@
                         <span>Subtotal (<span id="cartCount">0</span> items)</span>
                         <span class="font-medium text-gray-900" id="subtotalVal">Rp 0</span>
                     </div>
-                    <div class="flex justify-between">
-                        <span>Tax (PPN 11%)</span>
-                        <span class="font-medium text-gray-900" id="taxVal">Rp 0</span>
-                    </div>
-                    <div class="flex justify-between text-brand-600">
-                        <span>Discount</span>
-                        <span class="font-medium">- Rp 0</span>
-                    </div>
                     <div class="flex justify-between font-bold text-lg pt-4 border-t border-gray-200 text-gray-900">
                         <span>Total Payable</span>
                         <span id="totalVal">Rp 0</span>
@@ -114,7 +95,6 @@
     <script>
         let products = [];
         let cart = [];
-        const TAX_RATE = 0.11;
 
         // Formatter
         const formatRupiah = (number) => {
@@ -146,32 +126,32 @@
                 
                 if (product.stock <= 0) {
                     stockClass = 'bg-red-50 text-red-500';
-                    stockText = 'Stock: 0';
+                    stockText = 'Habis'; 
                     opacityClass = 'opacity-60 cursor-not-allowed';
                 } else if (product.stock < 10) {
                     stockClass = 'bg-orange-50 text-orange-500';
                 }
 
                 const card = document.createElement('div');
-                card.className = `bg-white border border-gray-100 rounded-2xl p-5 text-center flex flex-col h-full shadow-sm hover:shadow-md hover:border-brand-200 transition ${opacityClass}`;
+                
+                // KELAS CSS: flex-row dan items-center agar menyamping
+                card.className = `bg-white border border-gray-200 rounded-xl p-4 flex justify-between items-center shadow-sm hover:shadow-md hover:border-brand-300 transition ${opacityClass}`;
+                
                 if (product.stock > 0) {
                     card.onclick = () => addToCart(product);
                     card.classList.add('cursor-pointer');
                 }
 
+                // HTML: Kiri = Info Obat, Kanan = Stok & Harga
                 card.innerHTML = `
-                    <div class="h-28 bg-gray-50 rounded-xl mb-4 flex items-center justify-center text-gray-300">
-                        ${product.image_path ? `<img src="../${product.image_path}" class="h-full object-contain mix-blend-multiply"/>` : `<svg class="w-10 h-10" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 002-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10"></path></svg>`}
+                    <div class="text-left flex-1 pr-3">
+                        <h4 class="font-bold text-[15px] text-gray-900 leading-tight mb-1">${product.nama_obat}</h4>
+                        <p class="text-xs text-gray-500 mb-1">${product.nama_kategori || 'Obat'} ${product.deskripsi_kemasan ? '• ' + product.deskripsi_kemasan : ''}</p>
+                        <p class="text-[11px] text-gray-400 font-medium">${product.nama_rak || product.no_rak ? 'Rak: ' + (product.nama_rak || product.no_rak) : 'Rak: -'}</p>
                     </div>
-                    <div class="flex-1 flex flex-col justify-between">
-                        <div>
-                            <h4 class="font-bold text-sm text-gray-900 leading-snug mb-1">${product.nama_obat}</h4>
-                            <p class="text-xs text-gray-500 mb-3">${product.nama_kategori || 'Obat'} ${product.deskripsi_kemasan ? '- ' + product.deskripsi_kemasan : ''}</p>
-                        </div>
-                        <div class="flex items-center justify-between mt-auto">
-                            <p class="text-brand-600 font-bold">${formatRupiah(product.harga_jual)}</p>
-                            <span class="text-[11px] font-semibold px-2 py-1 rounded-lg ${stockClass}">${stockText}</span>
-                        </div>
+                    <div class="text-right flex flex-col items-end">
+                        <span class="text-[11px] font-semibold px-2 py-1 rounded-md mb-2 ${stockClass}">${stockText}</span>
+                        <p class="text-brand-600 font-extrabold text-[15px]">${formatRupiah(product.harga_jual)}</p>
                     </div>
                 `;
                 grid.appendChild(card);
@@ -260,16 +240,15 @@
         }
 
         function updateSummary(subtotal) {
-            const tax = subtotal * TAX_RATE;
-            const total = subtotal + tax; // ignoring discount for now
+            // Karena tidak ada pajak, Total tagihan sama dengan Subtotal
+            const total = subtotal; 
             
             document.getElementById('subtotalVal').innerText = formatRupiah(subtotal);
-            document.getElementById('taxVal').innerText = formatRupiah(tax);
             document.getElementById('totalVal').innerText = formatRupiah(total);
             
-            // Store total for checkout
+            // Simpan total untuk dikirim saat checkout
             window.cartSubtotal = subtotal;
-            window.cartTax = tax;
+            window.cartTax = 0; // Pajak di-set 0
             window.cartTotal = total;
         }
 
@@ -278,24 +257,6 @@
             const query = e.target.value.toLowerCase();
             const filtered = products.filter(p => p.nama_obat.toLowerCase().includes(query) || p.kode_obat.toLowerCase().includes(query));
             renderProducts(filtered);
-        });
-
-        document.getElementById('categoryFilters').addEventListener('click', (e) => {
-            if (e.target.tagName === 'BUTTON') {
-                // Update active state
-                Array.from(document.getElementById('categoryFilters').children).forEach(btn => {
-                    btn.className = "px-5 py-2 bg-gray-50 border border-gray-100 text-gray-600 hover:bg-gray-100 rounded-full text-sm font-medium transition";
-                });
-                e.target.className = "px-5 py-2 bg-brand-700 text-white rounded-full text-sm font-medium shadow-sm transition";
-                
-                const cat = e.target.getAttribute('data-category');
-                if (cat === 'all') {
-                    renderProducts(products);
-                } else {
-                    const filtered = products.filter(p => p.nama_kategori === cat);
-                    renderProducts(filtered);
-                }
-            }
         });
 
         document.getElementById('clearCartBtn').addEventListener('click', clearCart);
