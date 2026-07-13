@@ -18,6 +18,7 @@ try {
     $total_harga = $data['total_harga'];
     $tgl_penjualan = date('Y-m-d'); // Sesuai dengan tipe data DATE di database
 
+
     // Mulai transaksi database
     mysqli_begin_transaction($conn);
 

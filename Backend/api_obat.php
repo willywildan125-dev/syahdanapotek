@@ -9,7 +9,7 @@ header('Content-Type: application/json');
 // Kita gunakan LEFT JOIN agar obat yang belum punya stok tetap muncul (dengan stok 0)
 $query = "
     SELECT 
-        o.kode_obat, 
+        MIN(o.kode_obat) AS kode_obat, 
         o.nama_obat, 
         o.harga_jual, 
         o.satuan AS deskripsi_kemasan, 
@@ -19,7 +19,7 @@ $query = "
     FROM obat o
     LEFT JOIN stock s ON o.kode_obat = s.kode_obat
     LEFT JOIN kategori k ON o.id_kategori = k.id_kategori
-    GROUP BY o.kode_obat
+    GROUP BY o.nama_obat, o.harga_jual, o.satuan, o.no_rak, k.nama_kategori
 ";
 
 $result = mysqli_query($conn, $query);

@@ -15,11 +15,19 @@ while ($row = mysqli_fetch_assoc($query_rak)) {
     $rak_options[] = $row;
 }
 
-// Fetch satuan dari data obat yang sudah ada
+// Default satuan umum apotek + satuan dari data obat yang sudah ada
+$default_satuan = ['Tablet', 'Kapsul', 'Kaplet', 'Botol', 'Tube', 'Sachet', 'Strip', 'Box', 'Ampul', 'Vial', 'Salep', 'Sirup', 'Drops', 'Cream', 'Gel', 'Suppositoria', 'Inhaler', 'Patch'];
+$existing_satuan = [];
 $query_satuan = mysqli_query($conn, "SELECT DISTINCT satuan FROM obat ORDER BY satuan");
-$satuan_options = [];
 while ($row = mysqli_fetch_assoc($query_satuan)) {
-    $satuan_options[] = $row;
+    $existing_satuan[] = $row['satuan'];
+}
+// Gabungkan default + existing, hapus duplikat
+$all_satuan = array_unique(array_merge($default_satuan, $existing_satuan));
+sort($all_satuan);
+$satuan_options = [];
+foreach ($all_satuan as $s) {
+    $satuan_options[] = ['satuan' => $s];
 }
 ?>
 <!DOCTYPE html>
@@ -29,6 +37,17 @@ while ($row = mysqli_fetch_assoc($query_satuan)) {
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Apotek Syahdan - Tambah Produk</title>
     <link href="../dist/output.css" rel="stylesheet">
+    <style>
+        /* Hilangkan spinner arrows pada input number */
+        input[type="number"]::-webkit-outer-spin-button,
+        input[type="number"]::-webkit-inner-spin-button {
+            -webkit-appearance: none;
+            margin: 0;
+        }
+        input[type="number"] {
+            -moz-appearance: textfield;
+        }
+    </style>
 </head>
 <body class="bg-gray-50 font-sans text-gray-800 antialiased">
     <?php include 'sidebar.php'; ?>
