@@ -118,7 +118,7 @@ while ($row = mysqli_fetch_assoc($query)) {
         <div class="bg-white rounded-2xl border border-gray-100 shadow-sm overflow-hidden">
             <div class="p-6 border-b border-gray-100 flex gap-4 items-center bg-white">
                 <div class="relative flex-1">
-                    <input type="text" placeholder="Cari nama produk atau SKU..." class="w-full bg-gray-50 border border-gray-100 text-sm rounded-lg pl-10 pr-4 py-2.5 outline-none focus:border-blue-500 transition">
+                    <input id="searchInput" type="text" placeholder="Cari nama produk atau SKU..." class="w-full bg-gray-50 border border-gray-100 text-sm rounded-lg pl-10 pr-4 py-2.5 outline-none focus:border-blue-500 transition">
                     <svg class="w-4 h-4 text-gray-400 absolute left-3 top-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path></svg>
                 </div>
             </div>
@@ -179,5 +179,46 @@ while ($row = mysqli_fetch_assoc($query)) {
             </div>
         </div>
     </main>
+    <script>
+        (function(){
+            const input = document.getElementById('searchInput');
+            const table = document.querySelector('table');
+            if (!input || !table) return;
+            const tbody = table.querySelector('tbody');
+
+            function updateNoResults(visibleCount) {
+                const existing = document.getElementById('noResultsRow');
+                if (visibleCount === 0) {
+                    if (!existing) {
+                        const nr = document.createElement('tr');
+                        nr.id = 'noResultsRow';
+                        nr.innerHTML = '<td colspan="8" class="px-6 py-8 text-center text-gray-500">Tidak ada produk yang cocok.</td>';
+                        tbody.appendChild(nr);
+                    }
+                } else {
+                    if (existing) existing.remove();
+                }
+            }
+
+            input.addEventListener('input', function(e){
+                const q = (this.value || '').trim().toLowerCase();
+                const rows = Array.from(tbody.querySelectorAll('tr'));
+                let visible = 0;
+                rows.forEach(row => {
+                    // ignore rows that are explicitly used as placeholders (check colspan)
+                    const colspan = row.querySelector('td') ? row.querySelector('td').getAttribute('colspan') : null;
+                    if (colspan && parseInt(colspan) > 1) return;
+                    const text = row.textContent.toLowerCase();
+                    if (!q || text.indexOf(q) !== -1) {
+                        row.style.display = '';
+                        visible++;
+                    } else {
+                        row.style.display = 'none';
+                    }
+                });
+                updateNoResults(visible);
+            });
+        })();
+    </script>
 </body>
 </html>
