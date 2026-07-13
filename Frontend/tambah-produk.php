@@ -14,6 +14,13 @@ $rak_options = [];
 while ($row = mysqli_fetch_assoc($query_rak)) {
     $rak_options[] = $row;
 }
+
+// Fetch satuan dari data obat yang sudah ada
+$query_satuan = mysqli_query($conn, "SELECT DISTINCT satuan FROM obat ORDER BY satuan");
+$satuan_options = [];
+while ($row = mysqli_fetch_assoc($query_satuan)) {
+    $satuan_options[] = $row;
+}
 ?>
 <!DOCTYPE html>
 <html lang="id">
@@ -31,7 +38,6 @@ while ($row = mysqli_fetch_assoc($query_rak)) {
         <div class="bg-white border-b border-gray-100 py-4 px-10 flex justify-between items-center sticky top-0 z-10">
             <h2 class="text-xl font-bold text-gray-900">Tambah Produk Baru</h2>
             <div class="flex items-center space-x-4">
-                <div class="relative">
                     <input type="text" placeholder="Cari obat..." class="w-64 bg-gray-50 border border-gray-100 text-sm rounded-lg pl-10 pr-4 py-2 outline-none focus:border-brand-500 transition">
                     <svg class="w-4 h-4 text-gray-400 absolute left-3 top-2.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path></svg>
                 </div>
@@ -77,9 +83,13 @@ while ($row = mysqli_fetch_assoc($query_rak)) {
 
                         <div class="grid grid-cols-2 gap-5">
                             <div>
-                                <label class="block text-xs font-bold text-gray-700 mb-2 uppercase tracking-wide">SKU<span class="text-red-500">*</span></label>
+                                <label class="block text-xs font-bold text-gray-700 mb-2 uppercase tracking-wide">SKU <span class="text-brand-500 text-[10px] font-semibold bg-brand-50 border border-brand-100 px-2 py-0.5 rounded-full ml-1">Auto</span></label>
                                 <div class="relative">
-                                    <input type="text" name="kode_obat" required placeholder="ketik kode" class="w-full bg-gray-50/70 border border-gray-200 rounded-xl pl-4 pr-12 py-3 text-sm outline-none focus:bg-white focus:border-brand-500 focus:ring-1 focus:ring-brand-500 transition">
+                                    <input type="text" name="kode_obat" id="skuInput" readonly class="w-full bg-gray-100 border border-gray-200 rounded-xl pl-4 pr-12 py-3 text-sm outline-none cursor-not-allowed text-gray-600 font-mono font-semibold tracking-wider" placeholder="Generating...">
+                                    <div class="absolute right-3 top-3">
+                                        <svg class="w-5 h-5 text-brand-500 animate-spin" id="skuLoading" fill="none" viewBox="0 0 24 24"><circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle><path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z"></path></svg>
+                                        <svg class="w-5 h-5 text-green-500 hidden" id="skuDone" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M5 13l4 4L19 7"></path></svg>
+                                    </div>
                                 </div>
                             </div>
                             <div>
@@ -110,11 +120,12 @@ while ($row = mysqli_fetch_assoc($query_rak)) {
                         <div>
                             <label class="block text-xs font-bold text-gray-600 mb-2 uppercase tracking-wide">SATUAN/UNIT TERKECIL <span class="text-red-500">*</span></label>
                             <select name="satuan_terkecil" required class="w-full bg-gray-50 border border-gray-100 rounded-xl px-4 py-3 text-sm outline-none focus:border-brand-500 transition appearance-none">
-                                <option value="Tablet">Tablet</option>
-                                <option value="Kapsul">Kapsul</option>
-                                <option value="Botol">Botol</option>
-                                <option value="Tube">Tube</option>
-                                <option value="Strip">Strip</option>
+                                <option value="" class="text-gray-400">- Pilih Satuan Terkecil -</option>
+                                <?php foreach ($satuan_options as $sat): ?>
+                                    <option value="<?php echo htmlspecialchars($sat['satuan']); ?>">
+                                        <?php echo htmlspecialchars($sat['satuan']); ?>
+                                    </option>
+                                <?php endforeach; ?>
                             </select>
                         </div>
                         <div>
@@ -170,5 +181,27 @@ while ($row = mysqli_fetch_assoc($query_rak)) {
 
         </div>
     </main>
+    <script>
+    // Auto-generate SKU on page load
+    document.addEventListener('DOMContentLoaded', function() {
+        fetch('../Backend/generate_sku.php')
+            .then(res => res.json())
+            .then(data => {
+                if (data.success) {
+                    const skuInput = document.getElementById('skuInput');
+                    skuInput.value = data.sku;
+                    // Switch from loading spinner to checkmark
+                    document.getElementById('skuLoading').classList.add('hidden');
+                    document.getElementById('skuDone').classList.remove('hidden');
+                }
+            })
+            .catch(err => {
+                console.error('Failed to generate SKU:', err);
+                const skuInput = document.getElementById('skuInput');
+                skuInput.placeholder = 'Gagal generate SKU';
+                document.getElementById('skuLoading').classList.add('hidden');
+            });
+    });
+    </script>
 </body>
 </html>

@@ -222,3 +222,17 @@ while ($row = mysqli_fetch_assoc($query)) {
     </script>
 </body>
 </html>
+<?php include 'toast.php'; ?>
+<script>
+// Auto-show toast from URL parameters (after redirect from backend)
+(function() {
+    const params = new URLSearchParams(window.location.search);
+    const msg = params.get('msg');
+    const text = params.get('text');
+    if (msg && text) {
+        showToast(decodeURIComponent(text), msg === 'success' ? 'success' : 'error');
+        // Clean URL without reload
+        window.history.replaceState({}, '', window.location.pathname);
+    }
+})();
+</script>

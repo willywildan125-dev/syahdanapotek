@@ -14,6 +14,7 @@
 </head>
 <body class="bg-gray-50 font-sans text-gray-800 antialiased overflow-hidden">
     <?php include 'sidebar.php'; ?>
+    <?php include 'toast.php'; ?>
     <main class="ml-64 p-10 min-h-screen flex gap-6">
         <!-- Left Product Section -->
         <div class="flex-1 p-8 flex flex-col h-full bg-white">
@@ -165,7 +166,7 @@
                 if (existing.qty < product.stock) {
                     existing.qty++;
                 } else {
-                    alert('Stok tidak mencukupi!');
+                    showToast('Stok tidak mencukupi!', 'warning');
                 }
             } else {
                 cart.push({ ...product, qty: 1 });
@@ -177,7 +178,7 @@
             const item = cart.find(i => i.kode_obat === kode_obat);
             if (item) {
                 if (change === 1 && item.qty >= item.stock) {
-                    alert('Stok tidak mencukupi!');
+                    showToast('Stok tidak mencukupi!', 'warning');
                     return;
                 }
                 item.qty += change;
@@ -288,14 +289,14 @@
                     // Redirect to Struk
                     window.location.href = `struk.php?no_nota=${data.no_nota}`;
                 } else {
-                    alert('Gagal: ' + data.message);
+                    showToast('Gagal: ' + data.message, 'error');
                     btn.innerHTML = 'Process Payment';
                     btn.disabled = false;
                 }
             })
             .catch(err => {
                 console.error(err);
-                alert('Terjadi kesalahan sistem.');
+                showToast('Terjadi kesalahan sistem.', 'error');
                 btn.innerHTML = 'Process Payment';
                 btn.disabled = false;
             });
