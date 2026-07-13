@@ -7,6 +7,13 @@ $kategori_options = [];
 while ($row = mysqli_fetch_assoc($query_kategori)) {
     $kategori_options[] = $row;
 }
+
+// Fetch rak for dropdown
+$query_rak = mysqli_query($conn, "SELECT no_rak, nama_rak FROM rak ORDER BY no_rak");
+$rak_options = [];
+while ($row = mysqli_fetch_assoc($query_rak)) {
+    $rak_options[] = $row;
+}
 ?>
 <!DOCTYPE html>
 <html lang="id">
@@ -50,7 +57,19 @@ while ($row = mysqli_fetch_assoc($query_kategori)) {
             </div>
             <div>
                 <label class="block text-xs font-bold text-gray-700 mb-2 uppercase tracking-wide">Rak</label>
-                <input type="text" name="no_rak" placeholder="Contoh: A-01" class="w-full bg-gray-50/70 border border-gray-200 rounded-xl px-4 py-3 text-sm outline-none focus:bg-white focus:border-brand-500 focus:ring-1 focus:ring-brand-500 transition">
+                <div class="relative">
+                    <select name="no_rak" class="w-full bg-gray-50/70 border border-gray-200 rounded-xl px-4 py-3 text-sm outline-none focus:bg-white focus:border-brand-500 focus:ring-1 focus:ring-brand-500 transition appearance-none">
+                        <option value="" class="text-gray-400">Pilih rak...</option>
+                        <?php foreach ($rak_options as $rak): ?>
+                            <option value="<?php echo htmlspecialchars($rak['no_rak']); ?>"><?php echo htmlspecialchars($rak['no_rak'] . ' - ' . $rak['nama_rak']); ?></option>
+                        <?php endforeach; ?>
+                    </select>
+                    <div class="pointer-events-none absolute inset-y-0 right-0 flex items-center px-4 text-gray-500">
+                        <svg class="fill-current h-4 w-4" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20">
+                            <path d="M9.293 12.95l.707.707L15.657 8l-1.414-1.414L10 10.828 5.757 6.586 4.343 8z"/>
+                        </svg>
+                    </div>
+                </div>
             </div>
         </div>
         
