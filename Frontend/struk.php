@@ -108,10 +108,6 @@ $kembali = $tunai > $total ? $tunai - $total : 0;
                         <span class="font-medium text-gray-900">Rp <?php echo number_format($subtotal, 0, ',', '.'); ?></span>
                     </div>
                     <div class="flex justify-between">
-                        <span>Tax (PPN 11%)</span>
-                        <span class="font-medium text-gray-900">Rp <?php echo number_format($tax, 0, ',', '.'); ?></span>
-                    </div>
-                    <div class="flex justify-between">
                         <span>Discount</span>
                         <span class="font-medium text-gray-900">- Rp 0</span>
                     </div>
