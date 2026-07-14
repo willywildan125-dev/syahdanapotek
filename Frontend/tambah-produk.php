@@ -16,7 +16,7 @@ while ($row = mysqli_fetch_assoc($query_rak)) {
 }
 
 // Default satuan umum apotek + satuan dari data obat yang sudah ada
-$default_satuan = ['1 Strip', '1 Box'];
+$default_satuan = ['1 Strip', '1 Box', '1 Botol', '1 Sachet', '1 Pcs', '1 Pack'];
 $existing_satuan = [];
 $query_satuan = mysqli_query($conn, "SELECT DISTINCT satuan FROM obat ORDER BY satuan");
 while ($row = mysqli_fetch_assoc($query_satuan)) {
