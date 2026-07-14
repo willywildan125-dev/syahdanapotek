@@ -54,4 +54,3 @@ $result_produk = mysqli_query($conn, $query);
     </tr>
     <?php } ?>
 </tbody>
-echo "tes" > tes_file.txt
