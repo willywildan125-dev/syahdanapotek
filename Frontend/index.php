@@ -101,7 +101,7 @@ if ($start_date && $end_date) {
             display: none;
             position: absolute;
             top: calc(100% + 8px);
-            left: 0;
+            right: 0;
             background: white;
             border: 1px solid #e5e7eb;
             border-radius: 12px;

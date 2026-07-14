@@ -26,11 +26,13 @@ $query = mysqli_query($conn, "
     SELECT 
         o.*, 
         k.nama_kategori, 
+        r.nama_rak,
         IFNULL(SUM(s.jumlah_stock), 0) as total_stock,
         IFNULL(SUM(s.jumlah_stock * s.harga_awal), 0) as total_aset,
         IFNULL(MAX(s.harga_awal), 0) as hpp
     FROM obat o 
     LEFT JOIN kategori k ON o.id_kategori = k.id_kategori
+    LEFT JOIN rak r ON o.no_rak = r.no_rak
     LEFT JOIN stock s ON o.kode_obat = s.kode_obat
     GROUP BY o.kode_obat
 ");
@@ -161,6 +163,7 @@ while ($row = mysqli_fetch_assoc($query)) {
                         <tr>
                             <th scope="col" class="px-6 py-4 tracking-wider">Nama Produk & SKU</th>
                             <th scope="col" class="px-6 py-4 tracking-wider">Kategori</th>
+                            <th scope="col" class="px-6 py-4 tracking-wider">Rak</th>
                             <th scope="col" class="px-6 py-4 tracking-wider">Stok Fisik</th>
                             <th scope="col" class="px-6 py-4 tracking-wider">Unit Terkecil</th>
                             <th scope="col" class="px-6 py-4 tracking-wider">Kadaluwarsa</th>
@@ -208,6 +211,7 @@ while ($row = mysqli_fetch_assoc($query)) {
                                 <p class="text-gray-500 text-xs">SKU: <?php echo htmlspecialchars($item['kode_obat']); ?></p>
                             </td>
                             <td class="px-6 py-4 text-gray-700"><?php echo htmlspecialchars($item['nama_kategori'] ?? '-'); ?></td>
+                            <td class="px-6 py-4 text-gray-700"><?php echo htmlspecialchars($item['nama_rak'] ?? '-'); ?></td>
                             <td class="px-6 py-4 font-bold text-gray-900"><?php echo $item['total_stock']; ?></td>
                             <td class="px-6 py-4 text-gray-700"><?php echo htmlspecialchars($item['satuan'] ?? '-'); ?></td>
                             <td class="px-6 py-4">
@@ -245,7 +249,7 @@ while ($row = mysqli_fetch_assoc($query)) {
                         <?php endforeach; ?>
                         <?php if (empty($items)): ?>
                             <tr>
-                                <td colspan="10" class="px-6 py-8 text-center text-gray-500">Belum ada data obat.</td>
+                                <td colspan="11" class="px-6 py-8 text-center text-gray-500">Belum ada data obat.</td>
                             </tr>
                         <?php endif; ?>
                     </tbody>
@@ -266,7 +270,7 @@ while ($row = mysqli_fetch_assoc($query)) {
                     if (!existing) {
                         const nr = document.createElement('tr');
                         nr.id = 'noResultsRow';
-                        nr.innerHTML = '<td colspan="10" class="px-6 py-8 text-center text-gray-500">Tidak ada produk yang cocok.</td>';
+                        nr.innerHTML = '<td colspan="11" class="px-6 py-8 text-center text-gray-500">Tidak ada produk yang cocok.</td>';
                         tbody.appendChild(nr);
                     }
                 } else {

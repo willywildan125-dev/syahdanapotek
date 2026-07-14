@@ -61,7 +61,8 @@ $query_detail = mysqli_query($conn, "
         .footer { text-align: center; margin-top: 25px; font-size: 12px; font-weight: bold; }
         
         @media print {
-            body { background: #fff; padding: 0; }
+            @page { margin: 0; }
+            body { background: #fff; padding: 10px; }
             .struk-container { width: 100%; box-shadow: none; margin: 0; padding: 0; }
             .no-print { display: none !important; }
         }
@@ -70,6 +71,7 @@ $query_detail = mysqli_query($conn, "
 <body>
     <div class="struk-container">
         <div class="header">
+            <p style="font-weight: bold; font-size: 14px; margin-bottom: 10px;">Struk - <?php echo $nota['no_nota']; ?></p>
             <h2>APOTEK SYAHDAN</h2>
             <p>Jl. Wangisagara, Neglasari, Kec. Majalaya</p>
         </div>
