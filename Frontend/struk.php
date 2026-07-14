@@ -71,7 +71,7 @@ $query_detail = mysqli_query($conn, "
     <div class="struk-container">
         <div class="header">
             <h2>APOTEK SYAHDAN</h2>
-            <p>Jl. Contoh Alamat No. 123</p>
+            <p>Jl. Wangisagara, Neglasari, Kec. Majalaya</p>
         </div>
         
         <div class="divider"></div>
